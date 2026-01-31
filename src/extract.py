@@ -2,9 +2,14 @@ import json
 from datetime import datetime,timezone
 from pathlib import Path
 import requests
+import os
+
+API_KEY = os.getenv("CURRENCYFREAKS_API_KEY")
+if not API_KEY:
+    raise RuntimeError("CURRENCYFREAKS_API_KEY environment variable not set")
 
 def extract_rates():
-    base_url = "https://api.currencyfreaks.com/v2.0/rates/latest?apikey=REMOVED_API_KEY "
+    base_url = f"https://api.currencyfreaks.com/v2.0/rates/latest?apikey={API_KEY}"
     ROOT_PATH = Path(__file__).resolve().parent.parent
     rawd_dir = ROOT_PATH/"data"/"raw"
 
