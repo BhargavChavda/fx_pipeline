@@ -3,7 +3,9 @@ from datetime import datetime,timezone
 from pathlib import Path
 import requests
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 API_KEY = os.getenv("CURRENCYFREAKS_API_KEY")
 if not API_KEY:
     raise RuntimeError("CURRENCYFREAKS_API_KEY environment variable not set")

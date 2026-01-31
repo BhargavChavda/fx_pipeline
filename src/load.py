@@ -19,8 +19,11 @@ def load_to_db():
     engine = create_engine(f"postgresql://{DB_User}@{DB_Host}:{DB_Port}/{DB_Name}", echo=True)
     
     with engine.begin() as conn:
-        df.to_sql(name="rates",con = conn, if_exists="append", method = "multi",index=False,chunksize=1000)
-    
-    conn.close()
+        # this method threw an error because of primary key conflict:
+        # df.to_sql(name="rates",con = conn, if_exists="append", method = "multi",index=False,chunksize=1000)
+        records = df.to_dict(orient="records")
+        conn.execute(text("""INSERT INTO rates (date, base, target, rates, fetch_time)
+                VALUES (:date, :base, :target, :rates, :fetch_time)
+                ON CONFLICT (date, base, target) DO NOTHING"""), records)
     
 load_to_db()
