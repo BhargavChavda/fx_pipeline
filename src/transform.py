@@ -1,12 +1,11 @@
 from pathlib import Path
 import pandas as pd
 
-RAW_PATH = Path(
-    "/Users/lydia/Dev/Data Engineering/fx_pipeline/data/raw/fx_raw_2026-01-24T15-38-54.218882.json"
-)
-OUTPUT_PATH = Path(
-    "/Users/lydia/Dev/Data Engineering/fx_pipeline/data/processed/fx_rates.parquet"
-)
+ROOT_PATH = Path(__file__).resolve().parent.parent
+RAW_PATH = ROOT_PATH/"data"/"raw"
+latest_RAW_PATH = sorted(RAW_PATH.glob("fx_raw_*.json"))[-1]
+output_PROCESSED = latest_RAW_PATH.name.replace("fx_raw_","fx_rates_").replace(".json",".parquet")
+OUTPUT_PATH = ROOT_PATH/"data"/"processed"/output_PROCESSED
 
 REQUIRED_SCHEMA = {
     "date": "datetime64[us, UTC]",
@@ -78,5 +77,5 @@ def load(df: pd.DataFrame, out_path: Path) -> None:
 
 
 if __name__ == "__main__":
-    df = transform(RAW_PATH)
+    df = transform(latest_RAW_PATH)
     load(df, OUTPUT_PATH)
