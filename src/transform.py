@@ -1,11 +1,12 @@
-import json
 from pathlib import Path
 import pandas as pd
-import pyarrow
-import fastparquet
 
-RAW_PATH = Path("/Users/lydia/Dev/Data Engineering/fx_pipeline/data/raw/fx_raw_2026-01-24T15-38-54.218882.json")
-OUTPUT_PATH = Path("/Users/lydia/Dev/Data Engineering/fx_pipeline/data/processed/fx_rates.parquet")
+RAW_PATH = Path(
+    "/Users/lydia/Dev/Data Engineering/fx_pipeline/data/raw/fx_raw_2026-01-24T15-38-54.218882.json"
+)
+OUTPUT_PATH = Path(
+    "/Users/lydia/Dev/Data Engineering/fx_pipeline/data/processed/fx_rates.parquet"
+)
 
 REQUIRED_SCHEMA = {
     "date": "datetime64[us, UTC]",
@@ -14,6 +15,7 @@ REQUIRED_SCHEMA = {
     "rates": "float64",
     "fetch_time": "datetime64[us]",
 }
+
 
 def load_raw(path: Path) -> pd.DataFrame:
     if not path.exists():
@@ -33,20 +35,20 @@ def normalize(df: pd.DataFrame) -> pd.DataFrame:
     cols.insert(2, col)
     return df[cols]
 
+
 def normalize_timestamps(df):
     for col in ["date", "fetch_time"]:
         df[col] = pd.to_datetime(df[col], utc=True)
         df[col] = df[col].dt.tz_localize(None)
     return df
 
+
 def enforce_schema(df: pd.DataFrame) -> pd.DataFrame:
     expected_cols = list(REQUIRED_SCHEMA.keys())
 
     if list(df.columns) != expected_cols:
         raise ValueError(
-            f"schema mismatch.\n"
-            f"expected: {expected_cols}\n"
-            f"got: {list(df.columns)}"
+            f"schema mismatch.\nexpected: {expected_cols}\ngot: {list(df.columns)}"
         )
     return df
 
