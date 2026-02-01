@@ -62,16 +62,23 @@ fx_pipeline
 - local .env is ignored by git
 
  ## How to run? (Locally)
-1) One-Time Setup
+
+1) Create venv and install requirements
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+2) One-Time Setup
 ```bash
 python setup/setup.py
 ```
-2) Set env variables
+3) Set env variables
 ```bash
 export CURRENCYFREAKS_API_KEY=your_api_key
 ```
 Or use .env
-3) Run the pipeline in this order:
+4) Run the pipeline in this order:
 - src/extract.py
 - src/transform.py
 - src/load.py
