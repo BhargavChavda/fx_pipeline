@@ -1,12 +1,6 @@
 from pathlib import Path
 import pandas as pd
 
-ROOT_PATH = Path(__file__).resolve().parent.parent
-RAW_PATH = ROOT_PATH/"data"/"raw"
-latest_RAW_PATH = sorted(RAW_PATH.glob("fx_raw_*.json"))[-1]
-output_PROCESSED = latest_RAW_PATH.name.replace("fx_raw_","fx_rates_").replace(".json",".parquet")
-OUTPUT_PATH = ROOT_PATH/"data"/"processed"/output_PROCESSED
-
 REQUIRED_SCHEMA = {
     "date": "datetime64[us, UTC]",
     "base": "string",
@@ -76,6 +70,6 @@ def load(df: pd.DataFrame, out_path: Path) -> None:
     df.to_parquet(out_path, index=False)
 
 
-if __name__ == "__main__":
-    df = transform(latest_RAW_PATH)
-    load(df, OUTPUT_PATH)
+# if __name__ == "__main__":
+    # df = transform(latest_RAW_PATH)
+    # load(df, OUTPUT_PATH)

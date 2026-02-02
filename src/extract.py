@@ -27,5 +27,3 @@ def extract_rates():
         with open(file_path, "w") as f:
             json.dump(data, f, indent=2)
         return file_path
-
-extract_rates()
