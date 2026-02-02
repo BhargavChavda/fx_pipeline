@@ -78,8 +78,10 @@ python setup/setup.py
 export CURRENCYFREAKS_API_KEY=your_api_key
 ```
 Or use .env
-4) Run the pipeline in this order:
-- src/main.py
+4) Run the pipeline
+```bash
+python src/main.py
+```
 
 ## Next Steps:
 - Orchestration using Airflow
