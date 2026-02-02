@@ -79,9 +79,7 @@ export CURRENCYFREAKS_API_KEY=your_api_key
 ```
 Or use .env
 4) Run the pipeline in this order:
-- src/extract.py
-- src/transform.py
-- src/load.py
+- src/main.py
 
 ## Next Steps:
-TBD
+- Orchestration using Airflow
