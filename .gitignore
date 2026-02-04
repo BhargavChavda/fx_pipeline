@@ -2,6 +2,9 @@
 .venv/
 venv/
 
+.airflow-env/
+airflow-env/
+
 # Python cache
 __pycache__/
 *.pyc
