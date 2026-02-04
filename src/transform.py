@@ -68,8 +68,3 @@ def transform(path: Path) -> pd.DataFrame:
 
 def load(df: pd.DataFrame, out_path: Path) -> None:
     df.to_parquet(out_path, index=False)
-
-
-# if __name__ == "__main__":
-    # df = transform(latest_RAW_PATH)
-    # load(df, OUTPUT_PATH)

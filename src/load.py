@@ -1,14 +1,8 @@
 import pandas as pd
 from sqlalchemy import create_engine,text
+from config import DB_Host,DB_Name,DB_User,DB_Port
 
 def load_to_db(dataframe: pd.DataFrame):
-    
-    # df = pd.read_parquet(latest_processed_path)
-    
-    DB_Name = 'etl_db'
-    DB_User = 'bha'
-    DB_Host = 'localhost'
-    DB_Port = 5432
     
     engine = create_engine(f"postgresql://{DB_User}@{DB_Host}:{DB_Port}/{DB_Name}", echo=True)
     
