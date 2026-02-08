@@ -1,18 +1,20 @@
 # What is it?
-fx_pipeline is a personal data engineering project which implements a daily FX (foreign exchange) snapshot pipeline built from first principles with a focus on core principles like correctness, idempotency, etc.
+A production style, fully containerized data pipeline that ingests foreign exchange rate data from a live API, enforces strict schema contracts, persists raw and processed data and loads processed data into PostgreSQL. This pipeline is orchestrated using Apache Airflow and runs inside isolated Docker Containers.
 
 ## What does it do?
 On each run:
-- Fetches latest FX rates from CurrencyFreaksAPI
-- Writes the raw data into disk
-- Transforms nested JSON to a well defined schema
-- Inserts the transformed schema into PostgreSQL
-- Saves the transformed data as a parquet file in ./data/processed
+- Runs the DAG from airflow at 00:00
+- DockerOperator triggers fx_pipeline:latest image
+- The image runs the ETL Scripts
+- Writes raw and processed data to the mounted local directories /data/raw, /data/processed
+- Loads the processed dataframe into local PostgreSQL
 - Supports safe reruns with no risk of duplicating and corrupting data.
+
+## Architecture Overview:
+![Pipeline Architecture](docs/workflow.png)
 
 This pipeline was designed with reliability in mind meaning you could run this with your eyes closed and it would run or fail loudly if something's wrong.
 
-## Data Model:
 ### Dataset grain:
 One row of the table rates represents FX rate for (base currency, target currency) on a specific date. Base currency here being USD.
 
@@ -34,54 +36,77 @@ This pipeline was designed to be append only. Here the primary key is (date, bas
 
 ## Project Structure:
 ```
-fx_pipeline
-├── data
-│   ├── raw
-│   └── processed
-├── setup
-│   └── setup_db.py
-├── src
+fx_pipeline/
+│
+├── src/
 │   ├── extract.py
 │   ├── transform.py
 │   ├── load.py
+│   ├── config.py
 │   └── main.py
-├── .env
+│
+├── docker/
+│   └── airflow/
+│       ├── docker-compose.yaml
+│       ├── .env.example
+│       └── dags/
+│           └── fx_dag.py
+│
+├── data/
+│   ├── raw/
+│   └── processed/
+│
+├── Dockerfile
 ├── requirements.txt
+├── .env.example
 └── README.md
 ```
 
 ## Where it fails:
-- Missing API Key = extract.py fail
+- Missing API Key in Docker env = extract.py fail
 - Invalid/Null data = transform.py fail
 - DB Unavailable = load.py fails (unless setup.py is run)
 - Duplicate inserts = ignored by load.py
 
 ## Secrets:
-- API keys are read from environment variable in the .env file
+- API keys are read from environment variable in the docker's .env file
 - No secrets are hardcoded
 - local .env is ignored by git
 
- ## How to run? (Locally)
+ \#\# How to run? (Locally)
 
-1) Create venv and install requirements
+1) Build Pipeline Image
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+docker build -t fx_pipeline .
 ```
-2) One-Time Setup
+2) Start Airflow
 ```bash
-python setup/setup.py
+cd docker/airflow
+docker compose up -d
 ```
 3) Set env variables
+- Add your API key in docker/airflow/.env
+
+4) Access Airflow UI
 ```bash
-export CURRENCYFREAKS_API_KEY=your_api_key
+http://localhost:8080
 ```
-Or use .env
-4) Run the pipeline
+5) Trigger DAG:
 ```bash
-python src/main.py
+fx_dag
 ```
 
-## Next Steps:
-- Orchestration using Airflow
+## Features Implemented:
+- Containerized ETL Pipeline
+- Airflow orchestration using DockerOperator
+- Idempotent database loads
+- Immutable raw data storage
+- Schema Enforcement
+- Environment based secret management
+- Full reproducible
+
+## Future Improvements:
+- Cloud Deployment (AWS EC2)
+- Backfill capability
+- Object storage Integration (S3)
+- Container registry deployment

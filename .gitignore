@@ -2,19 +2,29 @@
 .venv/
 venv/
 
-.airflow-env/
-airflow-env/
+# Airflow runtime state
+docker/airflow/logs/
+docker/airflow/config/
+docker/airflow/plugins/
+
+# Airflow metadata DB
+docker/airflow/airflow.db
 
 # Python cache
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 
 # Environment variables / secrets
 .env
 
-# Data files
-data/raw/*
-data/processed/*
+# Data files (pipeline outputs)
+data/raw/
+data/processed/
 
-# OS
+# Docker artifacts
+*.tar
+
+# OS junk
 .DS_Store
